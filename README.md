@@ -1,6 +1,6 @@
 # Bank System
 
-Welcome to the *Bank System* project, a comprehensive banking system developed using *C++* and *SQL Server. This project consists of two main interfaces: an **Admin Window* and a *Client Window*, designed to facilitate banking operations such as creating accounts, managing transactions, and handling secure operations.
+Welcome to the *Bank System* project, a comprehensive banking system developed using *C++* and *SQL Server*. This project consists of two main interfaces: an **Admin Window** and a *Client Window*, designed to facilitate banking operations such as creating accounts, managing transactions, and handling secure operations.
 
 ## Features
 
