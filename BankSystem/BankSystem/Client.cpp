@@ -161,6 +161,9 @@ string Client::Get_password(void)
 
 void Client::CLIENT_PAGE(std::string bankId,std::string pass)
 {
+    bool exitSystem = false; // Flag to control when to exit the system
+
+
     int counter = 0;
     char choiceOfClient;
     double DepositeAmount, getcash, AmountTransfer;
@@ -168,7 +171,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
     std::string NEWSTATUS, destBankId;
     std::string oldPassword, newPassword, confirmPassword;
     system("cls");
-    std::cout << "\n\t\t\t\t\t ****** IMT Bank System ******" << std::endl;
+    std::cout << "\n\t\t\t\t\t ******   Bank System   ******" << std::endl;
     std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2 Welcome To Client Window \xB2\xB2\xB2" << std::endl;
     do
     {
@@ -238,11 +241,11 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
         }
     } while (!correct_pass);
 
-
-    if (id_found && correct_pass)
+    do {
+        if (id_found && correct_pass)
     {
         system("cls");
-        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
+        std::cout << "\n\t\t\t\t\t *********** Bank System ***********" << std::endl;
         std::cout << "\n\t\t\t\t\t\t\xB2\xB2\xB2  Welcome "  << " \t\xB2\xB2\xB2" << std::endl;
         std::cout << "\n\nplease choose the window :" << std::endl;
         std::cout << "1- Make Transaction." << std::endl;
@@ -256,7 +259,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
         {
             case '1':
                 system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
+                std::cout << "\n\t\t\t\t\t *********** Bank System ***********" << std::endl;
                 std::cout << "\n\t\t\t\t\t\t\xB2\xB2\xB2  Welcome  \t\xB2\xB2\xB2" << std::endl;
                 std::cout << "Enter the Bank Account ID you want to transfer money to: ";
                 std::cin.ignore(); // to clear the newline character left in the buffer by previous input
@@ -281,7 +284,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
-                    CLIENT_PAGE(bankId, pass);
+                    //CLIENT_PAGE(bankId, pass);
                 }
                 else
                 {
@@ -290,12 +293,15 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
                     // Exit the program
+                    std::cout << "Exiting the system...\n";
+                    exitSystem = true; // Set flag to true to exit the loop
+                    // Exit the program
                     main_menu();
                 }
                 break;
             case '2':
                 system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
+                std::cout << "\n\t\t\t\t\t *********** Bank System ***********" << std::endl;
                 std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome    \xB2\xB2\xB2" << std::endl;
                 std::cout << "Enter your old password: ";
                 std::cin.ignore(); // Clear the buffer
@@ -341,7 +347,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
-                    CLIENT_PAGE(bankId, pass);
+                    //CLIENT_PAGE(bankId, pass);
                 }
                 else
                 {
@@ -350,12 +356,15 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
                     // Exit the program
+                    std::cout << "Exiting the system...\n";
+                    exitSystem = true; // Set flag to true to exit the loop
+                    // Exit the program
                     main_menu();
                 }
                 break;
             case '3':
                 system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
+                std::cout << "\n\t\t\t\t\t *********** Bank System ***********" << std::endl;
                 std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome   \xB2\xB2\xB2" << std::endl;
                 std::cout << "Enter the cash you want: ";
                 std::cin.ignore(); // to clear the newline character left in the buffer by previous input
@@ -378,7 +387,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
-                    CLIENT_PAGE(bankId, pass);
+                    //CLIENT_PAGE(bankId, pass);
                 }
                 else
                 {
@@ -387,12 +396,15 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
                     // Exit the program
+                    std::cout << "Exiting the system...\n";
+                    exitSystem = true; // Set flag to true to exit the loop
+                    // Exit the program
                     main_menu();
                 }
                 break;
             case '4':
                 system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
+                std::cout << "\n\t\t\t\t\t *********** Bank System ***********" << std::endl;
                 std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome    \xB2\xB2\xB2" << std::endl;
                 std::cout << "Enter amount you want to deposit: ";
                 std::cin.ignore(); // to clear the newline character left in the buffer by previous input
@@ -414,7 +426,7 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
-                    CLIENT_PAGE(bankId, pass);
+                    //CLIENT_PAGE(bankId, pass);
                 }
                 else
                 {
@@ -423,14 +435,20 @@ void Client::CLIENT_PAGE(std::string bankId,std::string pass)
                     SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
                     SQLCloseCursor(SQLStatementHandle);
                     // Exit the program
+                    std::cout << "Exiting the system...\n";
+                    exitSystem = true; // Set flag to true to exit the loop
+                    // Exit the program
                     main_menu();
                 }
                 break;
             case '5':
+                // Exit the program
+                std::cout << "Exiting the system...\n";
+                exitSystem = true; // Set flag to true to exit the loop
                 main_menu();
                 break;
         }
     }
-
+    } while (!exitSystem);
 }
 

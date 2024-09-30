@@ -128,7 +128,7 @@ bool Create_New_Account::executeInsert(SQLHANDLE SQLStatementHandle, const std::
 	}
 	else
 	{
-		admin.ADMIN_PAGE(AdminUser, AdminPass);
+		//admin.ADMIN_PAGE(AdminUser, AdminPass);
 	}
 	return true;
 }

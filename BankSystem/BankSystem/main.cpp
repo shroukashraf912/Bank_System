@@ -2,7 +2,7 @@
 *************************************************************************
     Author:          Shrouk Ashraf Abdelfattah Ahmed
     Date of Started: 1-8-2024
-    Project:         IMT Bank System by using C++ and SQL Database
+    Project:         Bank System by using C++ and SQL Database
     Version:         V.1
 *************************************************************************
 */
@@ -20,6 +20,7 @@ using namespace std;
 #include "Admin.h"
 #include "Create_New_Account.h"
 #include "Client.h"
+
 
 // Function to print SQL errors
 /*void PrintSQLError(SQLHANDLE handle, SQLSMALLINT handleType) {

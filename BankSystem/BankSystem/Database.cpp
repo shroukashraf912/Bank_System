@@ -102,7 +102,7 @@ void Database::main_menu(void)
     string AdminUser, AdminPass;
     string ClientId, ClientPass;
     system("cls");
-    cout << "\n\t\t\t\t\t ****** IMT Bank System ******" << endl;
+    std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
     cout << "\n\t\t\t\t\t\xB2\xB2\xB2 Welcome To The Main Menu \xB2\xB2\xB2" << endl;
     cout << "\n\nplease choose the window :" << endl;
     cout << "1- Admin." << endl;

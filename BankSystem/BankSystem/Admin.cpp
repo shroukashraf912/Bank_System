@@ -97,11 +97,13 @@ void Admin::ADMIN_PAGE(std::string user, std::string pass)
     double balance;
     int BankID;
     double DepositeAmount, getcash, AmountTransfer;
-    std::string OutPage;
+    std::string OutPage = "FALSE";
     std::string BankId; // Example BankId you want to fetch data for
     std::string NEWSTATUS, destBankId;
+    bool exitSystem = false; // Flag to control when to exit the system
+
     system("cls");
-    std::cout << "\n\t\t\t\t\t ****** IMT Bank System ******" << std::endl;
+    std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
     std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2 Welcome To Admin Window \xB2\xB2\xB2" << std::endl;
     // Loop to find user
     do
@@ -173,227 +175,269 @@ void Admin::ADMIN_PAGE(std::string user, std::string pass)
     } while (!correct_pass);
 
     // If the code reaches here, the user is authenticated
-
-    if (user_found && correct_pass)
+    do
     {
-        system("cls");
-        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-        std::cout << "\n\t\t\t\t\t\t\xB2\xB2\xB2  Welcome, " << user << " \t\xB2\xB2\xB2" << std::endl;
-        std::cout << "\n\nplease choose the window :" << std::endl;
-        std::cout << "1- Create New Account." << std::endl;
-        std::cout << "2- Open Existing Account." << std::endl;
-        std::cout << "3- Exist System." << std::endl;
-        std::cout << "\n\nEnter your choice :\t";
-        std::cin >> choiceOfAdmin;
-        switch (choiceOfAdmin)
+        if (user_found && correct_pass)
         {
-            case '1':
-                //Create New Account
-                system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                std::cout << "\n\t\t\t\t\xB2\xB2\xB2  Welcome Create Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                account.CreateNewAccount();
+            system("cls");
+            std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+            std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2\tWelcome, " << user << " \t\xB2\xB2\xB2" << std::endl;
+            std::cout << "\n\nplease choose the window :" << std::endl;
+            std::cout << "1- Create New Account." << std::endl;
+            std::cout << "2- Open Existing Account." << std::endl;
+            std::cout << "3- Exist System." << std::endl;
+            std::cout << "\n\nEnter your choice :\t";
+            std::cin >> choiceOfAdmin;
+            switch (choiceOfAdmin)
+            {
+                case '1':
+                    //Create New Account
+                    system("cls");
+                    std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                    std::cout << "\n\t\t\t\t\xB2\xB2\xB2 Welcome Create Account Page, " << user << " \xB2\xB2\xB2" << std::endl;
+                    account.CreateNewAccount();
 
-                fullName = account.GetFullName();
-                fullAddress = account.GetFullAddress();
-                nationalId = account.GetNationalId();
-                guardian = account.GetGuardian();
-                guardianNationalId = account.GetGuardianNationalId();
-                age = account.GetAge();
-                balance = account.GetBalance();
-                AccountStatus = account.GetAccountStatus();
-                AccountPass = account.GetPassword();
-                BankID = account.GetBankAccountId();
+                    fullName = account.GetFullName();
+                    fullAddress = account.GetFullAddress();
+                    nationalId = account.GetNationalId();
+                    guardian = account.GetGuardian();
+                    guardianNationalId = account.GetGuardianNationalId();
+                    age = account.GetAge();
+                    balance = account.GetBalance();
+                    AccountStatus = account.GetAccountStatus();
+                    AccountPass = account.GetPassword();
+                    BankID = account.GetBankAccountId();
 
-                // Insert data of new accounts in the acouunts table
-                if (!Create_New_Account::executeInsert(Database::SQLStatementHandle, fullName, fullAddress, nationalId, age, guardian, guardianNationalId, balance, BankID, AccountPass, AccountStatus))
-                {
-                    cout << "Failed to insert data" << endl;
+                    // Insert data of new accounts in the acouunts table
+                    if (!Create_New_Account::executeInsert(Database::SQLStatementHandle, fullName, fullAddress, nationalId, age, guardian, guardianNationalId, balance, BankID, AccountPass, AccountStatus))
+                    {
+                        cout << "Failed to insert data" << endl;
+                        break;
+                    }
+                    if (SQL_SUCCESS != SQLExecDirect(Database::SQLStatementHandle, (SQLCHAR*)SQLQuery_accounts, SQL_NTS))
+                    {
+                        Database::showSQLError(SQL_HANDLE_STMT, Database::SQLStatementHandle);
+                    }
+                    else
+                    {
+                        SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                        SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                        SQLCloseCursor(SQLStatementHandle);
+                        // Exit the program
+                        std::cout << "Exiting the system...\n";
+                        exitSystem = true; // Set flag to true to exit the loop
+                        // Exit the program
+                        main_menu();
+                    }
+                    
                     break;
-                }
-                if (SQL_SUCCESS != SQLExecDirect(Database::SQLStatementHandle, (SQLCHAR*)SQLQuery_accounts, SQL_NTS))
-                {
-                    Database::showSQLError(SQL_HANDLE_STMT, Database::SQLStatementHandle);
-                }
-                break;
-            case '2':
-                //Open Existing Account
-                system("cls");
-                std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                std::cout << "\n\t\t\t\t\xB2\xB2\xB2  Welcome  Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                std::cout << "Enter Bank Account ID: ";
-                std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                std::getline(std::cin, BankId);
-                std::cout << "\n" << std::endl;
-                //account data <--- <-----
-                std::cout << "**ACCOUNT**" << std::endl;
-                FetchAccountData(BankId);
-                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                std::cout << "\n" << std::endl;
-                std::cout << "Choose between the following features: " << std::endl;
-                std::cout << "1- Make Transaction." << std::endl;
-                std::cout << "2- Change Account Status." << std::endl;
-                std::cout << "3- Get Cash." << std::endl;
-                std::cout << "4- Deposit in Account." << std::endl;
-                std::cout << "5- Return to main Menu." << std::endl;
-                std::cout << "\n\nEnter your choice :\t";
-                std::cin >> choiceOfExisting;
-                switch (choiceOfExisting)
-                {
-                    case '1':
-                        system("cls");
-                        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                        std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                        std::cout << "Enter the Bank Account ID you want to transfer money to: ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, destBankId);
-                        std::cout << "Enter amount of money to transfer it to this account: ";
-                        std::cin >> AmountTransfer;
-                        std::cout << "\n" << std::endl;
-                        Open_Existing_Account::MakeTransaction(BankId, destBankId, AmountTransfer);
-                        //Open_Existing_Account::MakeTransaction("1378853914", "1192814015", 500);
-                        std::cout << "\n" << std::endl;
-                        std::cout << "**ACCOUNTS**" << std::endl;
-                        FetchAccountData(BankId);
-                        std::cout << "\n" << std::endl;
-                        FetchAccountData(destBankId);
-                        std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, OutPage);
+                case '2':
+                    //Open Existing Account
+                    system("cls");
+                    std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                    std::cout << "\n\t\t\t\t\xB2\xB2\xB2 Welcome  Existing Account Page, " << user << " \xB2\xB2\xB2" << std::endl;
+                    std::cout << "Enter Bank Account ID: ";
+                    std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                    std::getline(std::cin, BankId);
+                    std::cout << "\n" << std::endl;
+                    //account data <--- <-----
+                    std::cout << "**ACCOUNT**" << std::endl;
+                    FetchAccountData(BankId);
+                    SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                    std::cout << "\n" << std::endl;
+                    std::cout << "Choose between the following features: " << std::endl;
+                    std::cout << "1- Make Transaction." << std::endl;
+                    std::cout << "2- Change Account Status." << std::endl;
+                    std::cout << "3- Get Cash." << std::endl;
+                    std::cout << "4- Deposit in Account." << std::endl;
+                    std::cout << "5- Return to main Menu." << std::endl;
+                    std::cout << "\n\nEnter your choice :\t";
+                    std::cin >> choiceOfExisting;
+                    switch (choiceOfExisting)
+                    {
+                        case '1':
+                            system("cls");
+                            std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                            std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2 Welcome Existing Account Page, " << user << " \xB2\xB2\xB2" << std::endl;
+                            std::cout << "Enter the Bank Account ID you want to transfer money to: ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::getline(std::cin, destBankId);
+                            std::cout << "Enter amount of money to transfer it to this account: ";
+                            std::cin >> AmountTransfer;
+                            std::cout << "\n" << std::endl;
+                            Open_Existing_Account::MakeTransaction(BankId, destBankId, AmountTransfer);
+                            //Open_Existing_Account::MakeTransaction("1378853914", "1192814015", 500);
+                            std::cout << "\n" << std::endl;
+                            std::cout << "**ACCOUNTS**" << std::endl;
+                            FetchAccountData(BankId);
+                            std::cout << "\n" << std::endl;
+                            FetchAccountData(destBankId);
+                            std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::getline(std::cin, OutPage);
 
-                        // Convert OutPage to uppercase for comparison
-                        std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
+                            // Convert OutPage to uppercase for comparison
+                            std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
 
-                        if (OutPage == "TRUE")
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            ADMIN_PAGE(user, pass);
-                        }
-                        else
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            // Exit the program
-                            main_menu();
-                        }
-                        break;
-                    case '2':
-                        system("cls");
-                        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                        std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                        std::cout << "Enter the Status of the Account: ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, NEWSTATUS);
-                        std::cout << "\n" << std::endl;
-                        Open_Existing_Account::UpdateAccountStatus(BankId,NEWSTATUS);
-                        std::cout << "\n" << std::endl;
-                        std::cout << "**ACCOUNT**" << std::endl;
-                        FetchAccountData(BankId);
-                        std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, OutPage);
+                            if (OutPage == "TRUE")
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                //ADMIN_PAGE(user, pass);
+                            }
+                            else
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                // Exit the program
+                                std::cout << "Exiting the system...\n";
+                                exitSystem = true; // Set flag to true to exit the loop
+                                // Exit the program
+                                main_menu();
+                            }
+                            break;
+                        case '2':
+                            system("cls");
+                            std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                            std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
+                            std::cout << "Enter the Status of the Account: ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::getline(std::cin, NEWSTATUS);
+                            std::cout << "\n" << std::endl;
+                            Open_Existing_Account::UpdateAccountStatus(BankId,NEWSTATUS);
+                            std::cout << "\n" << std::endl;
+                            std::cout << "**ACCOUNT**" << std::endl;
+                            FetchAccountData(BankId);
+                            std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
+                            //std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            //std::getline(std::cin, OutPage);
+                            std::cin>> OutPage;
+                            // Convert OutPage to uppercase for comparison
+                            std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
 
-                        // Convert OutPage to uppercase for comparison
-                        std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
+                            if (OutPage == "TRUE")
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                //ADMIN_PAGE(user, pass);
+                            }
+                            else
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                // Exit the program
+                                std::cout << "Exiting the system...\n";
+                                exitSystem = true; // Set flag to true to exit the loop
+                                // Exit the program
+                                main_menu();
+                            }
+                            break;
+                        case '3':
+                            system("cls");
+                            std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                            std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2 Welcome Existing Account Page, " << user << " \xB2\xB2\xB2" << std::endl;
+                            std::cout << "Enter the cash you want: ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::cin>> getcash;
+                            std::cout << "\n" << std::endl;
+                            Open_Existing_Account::GetCashFromAccount(BankId, getcash);
+                            std::cout << "\n" << std::endl;
+                            std::cout << "**ACCOUNT**" << std::endl;
+                            FetchAccountData(BankId);
+                            std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::getline(std::cin, OutPage);
 
-                        if (OutPage == "TRUE")
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            ADMIN_PAGE(user, pass);
-                        }
-                        else
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            // Exit the program
-                            main_menu();
-                        }
-                        break;
-                    case '3':
-                        system("cls");
-                        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                        std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                        std::cout << "Enter the cash you want: ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::cin>> getcash;
-                        std::cout << "\n" << std::endl;
-                        Open_Existing_Account::GetCashFromAccount(BankId, getcash);
-                        std::cout << "\n" << std::endl;
-                        std::cout << "**ACCOUNT**" << std::endl;
-                        FetchAccountData(BankId);
-                        std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, OutPage);
+                            // Convert OutPage to uppercase for comparison
+                            std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
 
-                        // Convert OutPage to uppercase for comparison
-                        std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
+                            if (OutPage == "TRUE")
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                //ADMIN_PAGE(user, pass);
+                            }
+                            else
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                // Exit the program
+                                std::cout << "Exiting the system...\n";
+                                exitSystem = true; // Set flag to true to exit the loop
+                                // Exit the program
+                                main_menu();
+                            }
+                            break;
+                        case '4':
+                            system("cls");
+                            std::cout << "\n\t\t\t\t\t ******    Bank System   ******" << std::endl;
+                            std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
+                            std::cout << "Enter amount you want to deposit: ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::cin >> DepositeAmount;
+                            Open_Existing_Account::DepositToAccount(BankId, DepositeAmount);
+                            std::cout << "\n" << std::endl;
+                            std::cout << "**ACCOUNT**" << std::endl;
+                            FetchAccountData(BankId);
+                            std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
+                            std::cin.ignore(); // to clear the newline character left in the buffer by previous input
+                            std::getline(std::cin, OutPage);
 
-                        if (OutPage == "TRUE")
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            ADMIN_PAGE(user, pass);
-                        }
-                        else
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            // Exit the program
-                            main_menu();
-                        }
-                        break;
-                    case '4':
-                        system("cls");
-                        std::cout << "\n\t\t\t\t\t *********** IMT Bank System ***********" << std::endl;
-                        std::cout << "\n\t\t\t\t\t\xB2\xB2\xB2  Welcome Existing Account Page, " << user << "  \xB2\xB2\xB2" << std::endl;
-                        std::cout << "Enter amount you want to deposit: ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::cin >> DepositeAmount;
-                        Open_Existing_Account::DepositToAccount(BankId, DepositeAmount);
-                        std::cout << "\n" << std::endl;
-                        std::cout << "**ACCOUNT**" << std::endl;
-                        FetchAccountData(BankId);
-                        std::cout << "Do you want back to admin window? (TRUE or FALSE): ";
-                        std::cin.ignore(); // to clear the newline character left in the buffer by previous input
-                        std::getline(std::cin, OutPage);
+                            // Convert OutPage to uppercase for comparison
+                            std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
 
-                        // Convert OutPage to uppercase for comparison
-                        std::transform(OutPage.begin(), OutPage.end(), OutPage.begin(), ::toupper);
+                            if (OutPage == "TRUE")
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                //ADMIN_PAGE(user, pass);
+                            }
+                            else
+                            {
+                                // Reset statement handle parameters before calling another function
+                                SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
+                                SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
+                                SQLCloseCursor(SQLStatementHandle);
+                                // Exit the program
+                                std::cout << "Exiting the system...\n";
+                                exitSystem = true; // Set flag to true to exit the loop
+                                // Exit the program
+                                main_menu();
+                            }
+                            break;
+                        case '5':
+                            //ADMIN_PAGE(user,pass);
+                            break;
+                    }
+                    break;
+                case '3':
+                    // Exit the program
+                    std::cout << "Exiting the system...\n";
+                    exitSystem = true; // Set flag to true to exit the loop
+                    // Exit the program
+                    main_menu();
+                    break;
 
-                        if (OutPage == "TRUE")
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            ADMIN_PAGE(user, pass);
-                        }
-                        else
-                        {
-                            // Reset statement handle parameters before calling another function
-                            SQLFreeStmt(SQLStatementHandle, SQL_CLOSE);
-                            SQLFreeStmt(SQLStatementHandle, SQL_RESET_PARAMS);
-                            // Exit the program
-                            main_menu();
-                        }
-                        break;
-                    case '5':
-                        ADMIN_PAGE(user,pass);
-                        break;
-                }
-                break;
-            case '3':
-                // Exit the program
-                main_menu();
-                break;
-        }
+                default:
+                    std::cout << "Invalid choice. Please try again.\n";
+                    break;
+            }
     }
+    }while (!exitSystem); // Repeat the loop until exitSystem is set to true
 }
+
 
